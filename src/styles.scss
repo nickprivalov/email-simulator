@@ -1,1 +1,98 @@
 /* You can add global styles to this file, and also import other style files */
+
+
+// page-fill
+app-root, body, .app-container {
+    height: calc(100vh);
+    min-height: calc(100vh);
+}
+body {
+    max-height: calc(100vh + 256px);
+}
+
+/* ========================================================================== */
+/* THEMING */
+/* ========================================================================== */
+
+@import "~@angular/material/theming";
+@include mat-core();
+
+$email-primary: mat-palette($mat-light-blue, 800);
+$email-accent:  mat-palette($mat-light-blue, A400);
+$email-warn:    mat-palette($mat-red, A400);
+
+$email-theme:   mat-dark-theme($email-primary, $email-accent, $email-warn);
+
+@include angular-material-theme($email-theme);
+
+// modifications
+.mat-accent {
+    color: white!important;
+    text-shadow: 0 0 16px black;
+}
+button.mat-accent:hover {
+    text-shadow: 1px  1px 16px rgba(0,0,0, 0.35),
+                -1px -1px 16px rgba(0,0,0, 0.35),
+                -1px  1px 16px rgba(0,0,0, 0.35),
+                 1px -1px 16px rgba(0,0,0, 0.35);
+}
+button.mat-accent:active {
+    text-shadow: 0px  0px 8px rgba(0,0,0, 0.5),
+                -0px -0px 8px rgba(0,0,0, 0.5),
+                -0px  0px 8px rgba(0,0,0, 0.5),
+                 0px -0px 8px rgba(0,0,0, 0.5);
+}
+
+// theme-pulls for non-material
+.theme-primary-bg {
+    background-color: mat-color($email-primary);
+    color: white; // text
+}
+
+/* ========================================================================== */
+/* FONTS */
+/* ========================================================================== */
+
+// Standard font
+@font-face {
+    font-family: 'San Francisco';
+    src: url("assets/fonts-woff/SFProDisplay-Medium.woff") format("woff");
+    font-weight: normal;
+}
+// Lighter font
+@font-face {
+    font-family: 'San Francisco';
+    src: url("assets/fonts-woff/SFProDisplay-Light.woff") format("woff");
+    font-weight: lighter;
+}
+// Bold font
+@font-face {
+    font-family: 'San Francisco';
+    src: url("assets/fonts-woff/SFProDisplay-Regular.woff") format("woff");
+    font-weight: bold;
+}
+// Bolder font
+@font-face {
+    font-family: 'San Francisco';
+    src: url("assets/fonts-woff/SFProDisplay-Heavy.woff") format("woff");
+    font-weight: bolder;
+}
+
+// body font
+body {
+    padding: 0;
+    margin: 0;
+    font-family: 'San Francisco', sans-serif;
+    font-size: 14pt;
+    font-weight: bold; // for whatever god damn reason this makes it light. wtf.
+}
+
+// ==== Material font typography crap
+$email-typography: mat-typography-config(
+    $font-family: 'San Francisco, sans-serif',
+    $headline: mat-typography-level(36px, 44px, 700),
+    $body-1: mat-typography-level(14pt, 16pt, 700)
+);
+
+@include mat-base-typography($email-typography);
+@include angular-material-typography($email-typography);
