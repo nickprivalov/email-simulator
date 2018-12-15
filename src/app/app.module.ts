@@ -1,12 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 // Material imports
 import { MatCardModule, MatDialogModule, MatTooltipModule, MatButtonModule, 
          MatSlideToggleModule, MatSliderModule, MatPaginatorModule, 
-         MatTableModule } from '@angular/material';
+         MatTableModule, MatCheckboxModule } from '@angular/material';
 // TODO probably gonna need MatBadgeModule for email indicators, MatProgressSpinnerModule for risk severity
 
 import { AppRoutingModule } from './app-routing.module';
@@ -28,6 +29,7 @@ import { EmailServerService } from './services/email-server.service';
         BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
+        HttpClientModule,
         FlexLayoutModule,
         MatCardModule, 
         MatDialogModule, 
@@ -36,7 +38,8 @@ import { EmailServerService } from './services/email-server.service';
         MatSlideToggleModule, 
         MatSliderModule, 
         MatPaginatorModule, 
-        MatTableModule
+        MatTableModule,
+        MatCheckboxModule
     ],
     providers: [
         EmailServerService

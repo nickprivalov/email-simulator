@@ -26,9 +26,12 @@ $email-theme:   mat-dark-theme($email-primary, $email-accent, $email-warn);
 @include angular-material-theme($email-theme);
 
 // modifications
-.mat-accent {
+button.mat-accent {
     color: white!important;
-    text-shadow: 0 0 16px black;
+    text-shadow: 1px  1px 8px rgba(0,0,0, 0.5),
+                -1px -1px 8px rgba(0,0,0, 0.5),
+                -1px  1px 8px rgba(0,0,0, 0.5),
+                 1px -1px 8px rgba(0,0,0, 0.5);
 }
 button.mat-accent:hover {
     text-shadow: 1px  1px 16px rgba(0,0,0, 0.35),
@@ -37,10 +40,7 @@ button.mat-accent:hover {
                  1px -1px 16px rgba(0,0,0, 0.35);
 }
 button.mat-accent:active {
-    text-shadow: 0px  0px 8px rgba(0,0,0, 0.5),
-                -0px -0px 8px rgba(0,0,0, 0.5),
-                -0px  0px 8px rgba(0,0,0, 0.5),
-                 0px -0px 8px rgba(0,0,0, 0.5);
+    text-shadow: 0px  0px 8px black;
 }
 
 // theme-pulls for non-material
@@ -96,3 +96,14 @@ $email-typography: mat-typography-config(
 
 @include mat-base-typography($email-typography);
 @include angular-material-typography($email-typography);
+
+.tooltip-bubble {
+    font-size: 12pt!important;
+    text-align: center;
+}
+
+a {
+    color: #22AAFF;
+    text-decoration: underline;
+    cursor: pointer;
+}

@@ -1,51 +1,200 @@
 <div fxLayout="column" fxFlex="100" fxLayoutGap="16px" class="app-container">
 <!-- TITLE BAR -->
-    <div fxFlex="64px" class="title-bar theme-primary-bg mat-elevation-z12">
+    <div fxFlex="64px" class="title-bar theme-primary-bg mat-elevation-z24">
         Email Simulator 2018
     </div>
 <!-- OPTIONS -->
-    <div fxFlex fxLayout="row" fxLayoutAlign="center center" 
+    <div fxFlex="8em" fxLayout="row" fxLayoutAlign="center center" 
             class="options-box">
-        <mat-card fxFlex="97.5" class="mat-elevation-z8">
-            <mat-card-header><mat-card-title>Options</mat-card-title></mat-card-header>
-            <mat-card-content>
-                <button mat-raised-button color="accent">
-                    <i class="material-icons">undo</i>
-                    <span>Reset</span>
-                </button>
+        <mat-card fxFlex="97.5" class="mat-elevation-z4">
+            <mat-card-header fxLayout="row" fxLayoutGap="1em">
+                <mat-card-title fxLayout="row" fxLayoutAlign="none center">
+                    <span>Options</span>
+                    <div style="flex: 1 1 auto;">&nbsp;</div>
+                    <span class="subtitle">
+                        Email Simulator 2018 has only been tested with Chrome.
+                    </span>
+                </mat-card-title>
+            </mat-card-header>
+            <mat-card-content fxLayoutGap="2em" class="options-content">
+                <div fxLayout="row" fxLayoutAlign="none center" fxLayoutGap="3em">
+                    <div>
+                        <button mat-raised-button color="{{optionDisplayWarnings ? 'warn' : 'accent'}}"
+                                (click)="optionDisplayWarnings = !optionDisplayWarnings"
+                                labelPosition="before">
+                            <i class="material-icons">warning</i>
+                            <span>{{ optionDisplayWarnings ? 'Unprotect Inbox' : 'Protect Inbox' }}</span>
+                        </button>
+                    </div>
+                    <div style="flex: 1 1 auto;">&nbsp;</div>
+                    <div>
+                        <span>
+                            Chance of Dangerous Email: &nbsp;&nbsp; {{optionChanceBad}}%
+                            <mat-slider [(value)]="optionChanceBad" min="0" max="100"
+                                    tickInterval="20"></mat-slider>
+                        </span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="none center" fxLayoutGap="1em">
+                    <button mat-raised-button color="accent" (click)="clean()">
+                        <i class="material-icons">local_hospital</i>
+                        <span>Clean Inbox</span>
+                    </button>
+                    <div style="flex: 1 1 auto;">&nbsp;</div>
+                    <button mat-raised-button color="accent" (click)="reset()">
+                        <i class="material-icons">undo</i>
+                        <span>Reset</span>
+                    </button>
+                    <button mat-raised-button color="accent" (click)="generateEmails()">
+                        <i class="material-icons">cloud_download</i>
+                        <span>Generate Emails</span>
+                    </button>
+                    <button mat-raised-button color="accent" (click)="generateEmails(1)">
+                        <i class="material-icons">cloud_download</i>
+                        <span>Generate 1 Email</span>
+                    </button>
+                </div>
             </mat-card-content>
         </mat-card>
     </div>
 <!-- EMAILS -->
-    <div fxFlex="80" fxLayout="row" fxLayoutAlign="space-around none" 
-            class="inbox-container">
+    <div fxFlex fxLayout="row" fxLayoutAlign="center none" 
+            fxLayoutGap="1em" class="inbox-container">
     <!-- EMAIL TABLE LIST -->
-        <mat-card fxFlex="40" class="inbox-list mat-elevation-z4">
+        <mat-card fxFlex="48" class="inbox-list mat-elevation-z4">
             <mat-card-header><mat-card-title>Emails</mat-card-title></mat-card-header>
             <mat-card-content>
-                <table mat-table [dataSource]="emails" class="mat-elevation-z6">
+                <table mat-table [dataSource]="emails" class="mat-elevation-z12">
                     <!-- from -->
                     <ng-container matColumnDef="from">
                         <th mat-header-cell *matHeaderCellDef> From </th>
-                        <td mat-cell *matCellDef="let email"> {{email.from}} </td>
+                        <td mat-cell *matCellDef="let email" class="td-from"> 
+                            <span *ngIf="email.fromName.length > 20">
+                                {{email.fromName | slice:0:15}}
+                                {{email.fromName.length > 15 ? '...' : ''}}
+                            </span>
+                            <span *ngIf="email.fromName.length <= 20">
+                                {{email.fromName}}
+                            </span>
+                            <br/>
+                            <span *ngIf="email.fromEmail.length > 20">
+                                {{email.fromEmail | slice:0:15}}
+                                {{email.fromEmail.length > 15 ? '...' : ''}}
+                            </span>
+                            <span *ngIf="email.fromEmail.length <= 20">
+                                {{email.fromEmail}}
+                            </span>
+                        </td>
                     </ng-container>
                     <!-- subject -->
                     <ng-container matColumnDef="subject">
                         <th mat-header-cell *matHeaderCellDef> Subject </th>
-                        <td mat-cell *matCellDef="let email"> {{email.subject}} </td>
+                        <td mat-cell *matCellDef="let email" class="td-subject"> 
+                            <span *ngIf="email.subject.length > 65">
+                                {{email.subject | slice:0:65}}
+                                {{email.subject.length > 65 ? '...' : ''}}
+                            </span>
+                            <span *ngIf="email.subject.length <= 65">
+                                {{email.subject}}
+                            </span>
+                        </td>
                     </ng-container>
+                    <!-- security debug -->
+                    <!-- <ng-container matColumnDef="security">
+                        <th mat-header-cell *matHeaderCellDef> Security </th>
+                        <td mat-cell *matCellDef="let email"> {{email.security}} </td>
+                    </ng-container> -->
 
                     <!-- rows -->
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    <tr mat-row *matRowDef="let row; let index = index; columns: displayedColumns;"
+                        (click)="selectedEmailIndex = (index + paginator.pageIndex*10)"
+                        class="{{selectedEmailIndex == index ? 'selected-email' : ''}}"></tr>
                 </table>
+                <mat-paginator pageSize="10" showFirstLastButtons></mat-paginator>
             </mat-card-content>
         </mat-card>
     <!-- EMAIL PREVIEWS -->
-        <mat-card fxFlex="55" class="inbox-preview mat-elevation-z4">
+        <mat-card fxFlex="48" class="inbox-preview mat-elevation-z4">
             <mat-card-header><mat-card-title>Preview Message</mat-card-title></mat-card-header>
             <mat-card-content>
-                Message Preview
+                <mat-card class="mat-elevation-z12">
+                    <div class="email-header">
+        <div>
+            <div><b>From:</b></div>
+            <span fxLayout="row" fxFlex fxLayoutAlign="none center">
+                <i *ngIf="optionDisplayWarnings && (getEmailField('danger') == 'fraudSender' || getEmailField('danger') == 'fraudLink')" 
+                        class="material-icons security {{getEmailField('danger')}}"
+                        matTooltip="The sender cannot be verified and is unsafe!"
+                        matTooltipClass="tooltip-bubble"
+                        matTooltipPosition="left">
+                    cancel
+                </i>
+                <i *ngIf="optionDisplayWarnings && (getEmailField('danger') != 'fraudSender' && getEmailField('danger') != 'fraudLink')" 
+                        class="material-icons security"
+                        matTooltip="The sender is verified and safe."
+                        matTooltipClass="tooltip-bubble"
+                        matTooltipPosition="left">
+                    how_to_reg
+                </i>
+                <span>
+                   {{getEmailField('fromName')}} <{{getEmailField('fromEmail')}}>
+                </span>
+            </span>
+        </div>
+        <div>
+            <div><b>Subject:</b></div>
+            {{getEmailField('subject')}}
+        </div>
+        <div fxLayout="row" fxLayoutAlign="none center">
+            <div><b>Security:</b></div>
+            <span fxLayout="row" fxLayoutAlign="none center">
+                <i *ngIf="optionDisplayWarnings && getEmailField('security') == 'None'" 
+                        class="material-icons security {{getEmailField('security')}}"
+                        matTooltip="This email is unencrypted and unsecured!"
+                        matTooltipClass="tooltip-bubble"
+                        matTooltipPosition="left">
+                    lock_open
+                </i>
+                <i *ngIf="optionDisplayWarnings && getEmailField('security') != 'None'" 
+                        class="material-icons security {{getEmailField('security')}}"
+                        matTooltip="This email is secured with encryption."
+                        matTooltipClass="tooltip-bubble"
+                        matTooltipPosition="left">
+                    lock
+                </i>
+                <span>{{getEmailField('security')}}</span>
+            </span>
+        </div> 
+                    </div>
+                    <div class="danger danger-bar" 
+                            *ngIf="optionDisplayWarnings == true && isDanger()">
+                        <span><b>WARNING:</b></span><br/>
+        <span *ngIf="getEmailField('danger') == 'script'">
+            A dangerous script has been detected in the email.
+        </span>
+        <span *ngIf="getEmailField('danger') == 'fraudSender'">
+            The sender's identity could not be verified.  This may be a phishing attempt.
+        </span>
+        <span *ngIf="getEmailField('danger') == 'fraudLink'">
+            The email contains a link that does not match links typically sent by this sender,
+            or the link has been detected as a threat.
+        </span>
+        <span *ngIf="getEmailField('danger') == 'matchPattern'">
+            This email matches other emails that have been detected as spam or malicious.
+        </span>
+                    </div>
+                    <mat-card-content>
+                        {{getEmailField('danger') == 'script' && optionDisplayWarnings == true ? '[ The content of this email has been blocked for your safety ]' : getEmailField('content')}}
+                        <span *ngIf="getEmailField('danger') == 'fraudLink' || getEmailField('fromName') == 'Google'">
+                            <a *ngIf="(getEmailField('danger') != '' && !optionDisplayWarnings) || (getEmailField('danger') == '')">Reset Your Account</a>
+                            <span *ngIf="optionDisplayWarnings == true && getEmailField('danger') != ''">[ Malicious link blocked for your safety ] </span>
+                        </span>
+                        <span *ngIf="getEmailField('danger') == 'matchPattern' && !optionDisplayWarnings">
+                            <a>Date now!</a>
+                        </span>
+                    </mat-card-content>
+                </mat-card>
             </mat-card-content>
         </mat-card>
     </div>
